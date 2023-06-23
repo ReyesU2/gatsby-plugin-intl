@@ -41,7 +41,7 @@ exports.onCreateWebpackConfig = ({ actions, plugins }, pluginOptions) => {
   })
 }
 
-exports.onCreatePage = async ({ page, actions }, pluginOptions) => {
+exports.onCreatePage = async ({ page, actions }, pluginOptions, {disableTranslated404}) => {
   //Exit if the page has already been processed.
   if (typeof page.context.intl === "object") {
     return
@@ -115,9 +115,11 @@ exports.onCreatePage = async ({ page, actions }, pluginOptions) => {
         // do nothing
       } else {
         const localePage = generatePage(true, language)
-        const regexp = new RegExp("/404/?$")
-        if (regexp.test(localePage.path)) {
-          localePage.matchPath = `/${language}/*`
+        if (!disableTranslated404) {
+          const regexp = new RegExp("/404/?$")
+          if (regexp.test(localePage.path)) {
+            localePage.matchPath = `/${language}/*`
+          }
         }
         createPage(localePage)
       }
